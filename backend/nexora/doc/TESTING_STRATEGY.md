@@ -1,8 +1,8 @@
-# Product Domain Testing Strategy
+# Domain Testing Strategy
 
 ## Overview
 
-This document outlines the comprehensive testing strategy implemented for the Product domain class, following Test-Driven Development (TDD) principles and the project's coding guidelines.
+This document outlines the comprehensive testing strategy implemented for the Product and Category domain classes, following Test-Driven Development (TDD) principles and the project's coding guidelines.
 
 ## Testing Philosophy
 
@@ -16,7 +16,9 @@ Our testing approach follows these core principles:
 
 ## Test Structure
 
-The `ProductTest` class is organized into logical groups using JUnit 5's `@Nested` annotation:
+Both `ProductTest` and `CategoryTest` classes are organized into logical groups using JUnit 5's `@Nested` annotation:
+
+### Product Domain Tests
 
 ### 1. Constructor Tests
 Tests all ways to create Product instances:
@@ -72,10 +74,23 @@ End-to-end product lifecycle testing:
 
 ## Test Statistics
 
+### Product Domain Tests
 - **Total Tests**: 40
 - **Test Categories**: 8 nested test classes
 - **Parameterized Tests**: 2 (covering 11 different input combinations)
 - **Coverage Areas**: Constructor, Getters/Setters, Business Logic, Edge Cases, Relationships, Integration
+
+### Category Domain Tests
+- **Total Tests**: 47
+- **Test Categories**: 8 nested test classes
+- **Parameterized Tests**: 3 (covering 14 different input combinations)
+- **Coverage Areas**: Constructor, Getters/Setters, Business Logic, Edge Cases, Active Status, Timestamps, Integration
+
+### Combined Test Suite
+- **Total Tests**: 87
+- **Domain Classes Covered**: 2 (Product, Category)
+- **Test Categories**: 16 nested test classes
+- **Parameterized Tests**: 5 (covering 25 different input combinations)
 
 ## Key Testing Patterns
 
@@ -130,6 +145,22 @@ Tests validate the Product-Category relationship:
 - Null category handling
 - Referential integrity maintenance
 
+## Category-Specific Testing
+
+### Active Status Testing
+Category tests include specific validation for the active status field:
+- Default inactive status behavior
+- Active status toggling
+- Status maintenance during updates
+- Rapid status changes
+
+### Category Lifecycle Testing
+Tests validate complete category lifecycle:
+- Category creation with all fields
+- Category state transitions (active/inactive)
+- Data integrity during complex operations
+- Timestamp management
+
 ## Timestamp Testing
 
 Temporal field testing covers:
@@ -152,24 +183,38 @@ End-to-end testing validates:
 
 ## Test Execution
 
-### Running All Product Tests
+### Running All Domain Tests
 ```bash
+# Run all Product and Category tests
+./gradlew test --tests "*ProductTest" --tests "*CategoryTest"
+
+# Run all tests
+./gradlew test
+```
+
+### Running Specific Domain Tests
+```bash
+# Product tests only
 ./gradlew test --tests "*ProductTest"
+
+# Category tests only
+./gradlew test --tests "*CategoryTest"
 ```
 
 ### Running Specific Test Categories
 ```bash
-# Constructor tests only
+# Product constructor tests only
 ./gradlew test --tests "*ProductTest.ConstructorTests"
 
-# Business behavior tests only  
-./gradlew test --tests "*ProductTest.BusinessBehaviorTests"
+# Category business behavior tests only  
+./gradlew test --tests "*CategoryTest.BusinessBehaviorTests"
 ```
 
 ### Running Individual Tests
 ```bash
 # Single test method
 ./gradlew test --tests "*ProductTest.shouldCreateProductWithDefaultConstructor"
+./gradlew test --tests "*CategoryTest.shouldCreateCategoryWithDefaultConstructor"
 ```
 
 ## Test Reports
@@ -180,11 +225,13 @@ Test results are available in:
 
 ## Maintenance Guidelines
 
-1. **Add Tests for New Features**: Every new Product functionality must have corresponding tests
-2. **Update Tests for Changes**: When Product behavior changes, update relevant tests
+1. **Add Tests for New Features**: Every new domain functionality must have corresponding tests
+2. **Update Tests for Changes**: When domain behavior changes, update relevant tests
 3. **Maintain Test Clarity**: Keep test names descriptive and test logic simple
 4. **Follow AAA Pattern**: Maintain consistent test structure
 5. **Cover Edge Cases**: Always consider boundary conditions and error scenarios
+6. **Test Domain Relationships**: Ensure Product-Category relationships are properly tested
+7. **Validate Business Rules**: Test domain-specific business logic and constraints
 
 ## Future Enhancements
 
@@ -194,4 +241,4 @@ Potential areas for test expansion:
 3. **Concurrency Testing**: Test thread safety if applicable
 4. **Serialization Testing**: Test JSON/XML serialization if needed
 
-This comprehensive testing strategy ensures the Product domain class is robust, reliable, and maintainable while following industry best practices and the project's coding standards.
+This comprehensive testing strategy ensures both Product and Category domain classes are robust, reliable, and maintainable while following industry best practices and the project's coding standards. The test suite provides complete coverage of domain behavior, relationships, and edge cases, serving as both validation and living documentation of the domain model.
