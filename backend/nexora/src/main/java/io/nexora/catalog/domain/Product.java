@@ -4,15 +4,22 @@ import io.nexora.shared.valueobject.Money;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.boot.jaxb.mapping.spi.db.JaxbColumnDefinable;
+import jakarta.validation.constraints.PastOrPresent;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import java.time.LocalDateTime;
 
-import java.math.BigDecimal;
-import java.util.UUID;
 
 
 
 @Entity
 @Table(name = "products")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -32,5 +39,12 @@ public class Product {
     @OneToOne(fetch = FetchType.LAZY)
     private Category category;
 
+    @Column(nullable = false, updatable = false)
+    @PastOrPresent
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
+    @PastOrPresent
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }
