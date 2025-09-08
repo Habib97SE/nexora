@@ -8,9 +8,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Currency;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,6 +26,7 @@ class ProductTest {
     private Product product;
     private Money validPrice;
     private Category validCategory;
+    private Validator validator;
 
     @BeforeEach
     void setUp() {
@@ -31,6 +38,9 @@ class ProductTest {
                 .description("Electronic devices")
                 .active(true)
                 .build();
+        
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     @Nested
@@ -641,6 +651,215 @@ class ProductTest {
             lifecycleProduct.setUpdatedAt(now);
 
             assertTrue(lifecycleProduct.getUpdatedAt().isAfter(lifecycleProduct.getCreatedAt()));
+        }
+    }
+
+    @Nested
+    @DisplayName("Validation Tests")
+    class ValidationTests {
+
+        @Test
+        @DisplayName("Should validate product with valid data")
+        void shouldValidateProductWithValidData() {
+            // Given
+            Product validProduct = Product.builder()
+                    .name("Valid Product")
+                    .description("A valid product description")
+                    .price(validPrice)
+                    .stockQuantity(10)
+                    .category(validCategory)
+                    .build();
+
+            // When
+            Set<ConstraintViolation<Product>> violations = validator.validate(validProduct);
+
+            // Then
+            assertTrue(violations.isEmpty(), "Valid product should have no validation violations");
+        }
+
+        @Test
+        @DisplayName("Should fail validation when name is null")
+        void shouldFailValidationWhenNameIsNull() {
+            // Given
+            Product invalidProduct = Product.builder()
+                    .name(null)
+                    .description("A product with null name")
+                    .price(validPrice)
+                    .stockQuantity(10)
+                    .category(validCategory)
+                    .build();
+
+            // When
+            Set<ConstraintViolation<Product>> violations = validator.validate(invalidProduct);
+
+            // Then
+            assertFalse(violations.isEmpty(), "Product with null name should have validation violations");
+            assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("name") 
+                    && v.getMessage().contains("must not be null")));
+        }
+
+        @Test
+        @DisplayName("Should fail validation when name is too short")
+        void shouldFailValidationWhenNameIsTooShort() {
+            // Given
+            Product invalidProduct = Product.builder()
+                    .name("A") // Only 1 character, should be at least 2
+                    .description("A product with short name")
+                    .price(validPrice)
+                    .stockQuantity(10)
+                    .category(validCategory)
+                    .build();
+
+            // When
+            Set<ConstraintViolation<Product>> violations = validator.validate(invalidProduct);
+
+            // Then
+            assertFalse(violations.isEmpty(), "Product with name too short should have validation violations");
+            assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("name") 
+                    && (v.getMessage().contains("size must be between 2 and") || v.getMessage().contains("must be greater than or equal to 2"))));
+        }
+
+        @Test
+        @DisplayName("Should pass validation when name is exactly 2 characters")
+        void shouldPassValidationWhenNameIsExactly2Characters() {
+            // Given
+            Product validProduct = Product.builder()
+                    .name("AB") // Exactly 2 characters, should be valid
+                    .description("A product with 2-character name")
+                    .price(validPrice)
+                    .stockQuantity(10)
+                    .category(validCategory)
+                    .build();
+
+            // When
+            Set<ConstraintViolation<Product>> violations = validator.validate(validProduct);
+
+            // Then
+            assertTrue(violations.isEmpty(), "Product with 2-character name should be valid");
+        }
+
+        @Test
+        @DisplayName("Should fail validation when category is null")
+        void shouldFailValidationWhenCategoryIsNull() {
+            // Given
+            Product invalidProduct = Product.builder()
+                    .name("Valid Product Name")
+                    .description("A product with null category")
+                    .price(validPrice)
+                    .stockQuantity(10)
+                    .category(null) // Category is null, should fail validation
+                    .build();
+
+            // When
+            Set<ConstraintViolation<Product>> violations = validator.validate(invalidProduct);
+
+            // Then
+            assertFalse(violations.isEmpty(), "Product with null category should have validation violations");
+            assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("category") 
+                    && v.getMessage().contains("must not be null")));
+        }
+
+        @Test
+        @DisplayName("Should fail validation with multiple constraint violations")
+        void shouldFailValidationWithMultipleConstraintViolations() {
+            // Given
+            Product invalidProduct = Product.builder()
+                    .name("A") // Too short
+                    .description("A product with multiple violations")
+                    .price(validPrice)
+                    .stockQuantity(10)
+                    .category(null) // Null category
+                    .build();
+
+            // When
+            Set<ConstraintViolation<Product>> violations = validator.validate(invalidProduct);
+
+            // Then
+            assertFalse(violations.isEmpty(), "Product with multiple violations should have validation violations");
+            assertEquals(2, violations.size(), "Should have exactly 2 validation violations");
+            
+            // Check that both violations are present
+            assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("name")));
+            assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("category")));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"A", "", " "})
+        @DisplayName("Should fail validation for invalid name lengths")
+        void shouldFailValidationForInvalidNameLengths(String invalidName) {
+            // Given
+            Product invalidProduct = Product.builder()
+                    .name(invalidName)
+                    .description("A product with invalid name")
+                    .price(validPrice)
+                    .stockQuantity(10)
+                    .category(validCategory)
+                    .build();
+
+            // When
+            Set<ConstraintViolation<Product>> violations = validator.validate(invalidProduct);
+
+            // Then
+            assertFalse(violations.isEmpty(), "Product with invalid name '" + invalidName + "' should have validation violations");
+            assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("name")));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"AB", "ABC", "Valid Product Name", "Very Long Product Name That Exceeds Normal Length"})
+        @DisplayName("Should pass validation for valid name lengths")
+        void shouldPassValidationForValidNameLengths(String validName) {
+            // Given
+            Product validProduct = Product.builder()
+                    .name(validName)
+                    .description("A product with valid name")
+                    .price(validPrice)
+                    .stockQuantity(10)
+                    .category(validCategory)
+                    .build();
+
+            // When
+            Set<ConstraintViolation<Product>> violations = validator.validate(validProduct);
+
+            // Then
+            assertTrue(violations.isEmpty(), "Product with valid name '" + validName + "' should have no validation violations");
+        }
+
+        @Test
+        @DisplayName("Should validate product creation with all required fields")
+        void shouldValidateProductCreationWithAllRequiredFields() {
+            // Given
+            Product completeProduct = Product.builder()
+                    .name("Complete Product")
+                    .description("A complete product with all fields")
+                    .price(validPrice)
+                    .stockQuantity(100)
+                    .category(validCategory)
+                    .build();
+
+            // When
+            Set<ConstraintViolation<Product>> violations = validator.validate(completeProduct);
+
+            // Then
+            assertTrue(violations.isEmpty(), "Complete product should have no validation violations");
+        }
+
+        @Test
+        @DisplayName("Should validate product update with all required fields")
+        void shouldValidateProductUpdateWithAllRequiredFields() {
+            // Given
+            Product productToUpdate = Product.builder()
+                    .name("Updated Product")
+                    .description("An updated product")
+                    .price(validPrice)
+                    .stockQuantity(50)
+                    .category(validCategory)
+                    .build();
+
+            // When - Simulate update by validating again
+            Set<ConstraintViolation<Product>> violations = validator.validate(productToUpdate);
+
+            // Then
+            assertTrue(violations.isEmpty(), "Updated product should have no validation violations");
         }
     }
 }
