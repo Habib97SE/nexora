@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -26,7 +27,7 @@ public class Product {
     private String id;
 
     @NotNull
-    @Min(3)
+    @Size(min = 2)
     private String name;
 
     private String description;
@@ -37,6 +38,7 @@ public class Product {
     private int stockQuantity;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @NotNull
     private Category category;
 
     @Column(nullable = false, updatable = false)
