@@ -1,4 +1,4 @@
-package main.java.io.nexora.catalog.domain.service;
+package io.nexora.catalog.domain.service;
 
 import io.nexora.catalog.domain.Category;
 import io.nexora.catalog.domain.Product;
@@ -62,6 +62,8 @@ class ProductDomainServiceTest {
                 .createdAt(LocalDateTime.now().minusDays(1))
                 .updatedAt(LocalDateTime.now().minusHours(1))
                 .build();
+        // Initialize the service with the mocked repository
+        productDomainService = new ProductDomainService(productRepository);
     }
 
     @Nested
@@ -78,6 +80,7 @@ class ProductDomainServiceTest {
                     .price(validPrice)
                     .stockQuantity(5)
                     .category(validCategory)
+                    .sku("SKU-123")
                     .build();
 
             when(productRepository.findByCategoryId(any(UUID.class), anyInt(), anyInt()))
