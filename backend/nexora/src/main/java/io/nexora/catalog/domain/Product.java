@@ -49,4 +49,8 @@ public class Product {
     @PastOrPresent
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @NotNull
+    @Column(unique = true)
+    private String sku;
 }
