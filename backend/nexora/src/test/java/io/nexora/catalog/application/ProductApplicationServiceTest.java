@@ -3,7 +3,6 @@ package io.nexora.catalog.application;
 import io.nexora.catalog.domain.Category;
 import io.nexora.catalog.domain.Product;
 import io.nexora.catalog.domain.ProductRepository;
-import main.java.io.nexora.catalog.domain.service.ProductDomainService;
 import io.nexora.shared.valueobject.Money;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,9 +30,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ProductApplicationService Tests")
 class ProductApplicationServiceTest {
-
-    @Mock
-    private ProductDomainService productDomainService;
 
     @Mock
     private ProductRepository productRepository;
@@ -95,7 +91,7 @@ class ProductApplicationServiceTest {
                                 categoryId
                         );
 
-                when(productDomainService.createProduct(any(Product.class))).thenReturn(validProduct);
+                when(productRepository.save(any(Product.class))).thenReturn(validProduct);
 
                 // When
                 Product result = productApplicationService.createProduct(command);
@@ -103,7 +99,7 @@ class ProductApplicationServiceTest {
                 // Then
                 assertNotNull(result);
                 assertEquals(validProduct.getId(), result.getId());
-                verify(productDomainService).createProduct(any(Product.class));
+                verify(productRepository).save(any(Product.class));
             }
 
             @Test
@@ -120,7 +116,7 @@ class ProductApplicationServiceTest {
                                 categoryId
                         );
 
-                when(productDomainService.createProduct(any(Product.class)))
+                when(productRepository.save(any(Product.class)))
                         .thenThrow(new IllegalArgumentException("Domain validation failed"));
 
                 // When & Then
@@ -151,8 +147,8 @@ class ProductApplicationServiceTest {
                                 categoryId
                         );
 
-                when(productDomainService.updateProduct(eq(productId), any(Product.class)))
-                        .thenReturn(validProduct);
+                when(productRepository.findById(productId)).thenReturn(java.util.Optional.of(validProduct));
+                when(productRepository.save(any(Product.class))).thenReturn(validProduct);
 
                 // When
                 Product result = productApplicationService.updateProduct(productId, command);
@@ -160,7 +156,7 @@ class ProductApplicationServiceTest {
                 // Then
                 assertNotNull(result);
                 assertEquals(validProduct.getId(), result.getId());
-                verify(productDomainService).updateProduct(eq(productId), any(Product.class));
+                verify(productRepository).save(any(Product.class));
             }
 
             @Test
@@ -177,8 +173,7 @@ class ProductApplicationServiceTest {
                                 categoryId
                         );
 
-                when(productDomainService.updateProduct(eq(productId), any(Product.class)))
-                        .thenThrow(new IllegalArgumentException("Product not found"));
+                when(productRepository.findById(productId)).thenReturn(java.util.Optional.empty());
 
                 // When & Then
                 ProductApplicationService.ProductApplicationException exception = 
@@ -201,8 +196,8 @@ class ProductApplicationServiceTest {
                 ProductApplicationService.StockAdjustmentCommand command = 
                         new ProductApplicationService.StockAdjustmentCommand(5);
 
-                when(productDomainService.adjustStock(eq(productId), eq(5)))
-                        .thenReturn(validProduct);
+                when(productRepository.findById(productId)).thenReturn(java.util.Optional.of(validProduct));
+                when(productRepository.save(any(Product.class))).thenReturn(validProduct);
 
                 // When
                 Product result = productApplicationService.adjustStock(productId, command);
@@ -210,7 +205,7 @@ class ProductApplicationServiceTest {
                 // Then
                 assertNotNull(result);
                 assertEquals(validProduct.getId(), result.getId());
-                verify(productDomainService).adjustStock(eq(productId), eq(5));
+                verify(productRepository).save(any(Product.class));
             }
 
             @Test
@@ -220,8 +215,7 @@ class ProductApplicationServiceTest {
                 ProductApplicationService.StockAdjustmentCommand command = 
                         new ProductApplicationService.StockAdjustmentCommand(-20);
 
-                when(productDomainService.adjustStock(eq(productId), eq(-20)))
-                        .thenThrow(new IllegalArgumentException("Insufficient stock"));
+                when(productRepository.findById(productId)).thenReturn(java.util.Optional.of(validProduct));
 
                 // When & Then
                 ProductApplicationService.ProductApplicationException exception = 
@@ -244,8 +238,8 @@ class ProductApplicationServiceTest {
                 ProductApplicationService.ChangeCategoryCommand command = 
                         new ProductApplicationService.ChangeCategoryCommand(categoryId);
 
-                when(productDomainService.changeCategory(eq(productId), any(Category.class)))
-                        .thenReturn(validProduct);
+                when(productRepository.findById(productId)).thenReturn(java.util.Optional.of(validProduct));
+                when(productRepository.save(any(Product.class))).thenReturn(validProduct);
 
                 // When
                 Product result = productApplicationService.changeCategory(productId, command);
@@ -253,7 +247,7 @@ class ProductApplicationServiceTest {
                 // Then
                 assertNotNull(result);
                 assertEquals(validProduct.getId(), result.getId());
-                verify(productDomainService).changeCategory(eq(productId), any(Category.class));
+                verify(productRepository).save(any(Product.class));
             }
 
             @Test
@@ -263,8 +257,7 @@ class ProductApplicationServiceTest {
                 ProductApplicationService.ChangeCategoryCommand command = 
                         new ProductApplicationService.ChangeCategoryCommand(categoryId);
 
-                when(productDomainService.changeCategory(eq(productId), any(Category.class)))
-                        .thenThrow(new IllegalArgumentException("Category not found"));
+                when(productRepository.findById(productId)).thenReturn(java.util.Optional.empty());
 
                 // When & Then
                 ProductApplicationService.ProductApplicationException exception = 
@@ -290,8 +283,8 @@ class ProductApplicationServiceTest {
                                 "USD"
                         );
 
-                when(productDomainService.updatePrice(eq(productId), any(Money.class)))
-                        .thenReturn(validProduct);
+                when(productRepository.findById(productId)).thenReturn(java.util.Optional.of(validProduct));
+                when(productRepository.save(any(Product.class))).thenReturn(validProduct);
 
                 // When
                 Product result = productApplicationService.updatePrice(productId, command);
@@ -299,7 +292,7 @@ class ProductApplicationServiceTest {
                 // Then
                 assertNotNull(result);
                 assertEquals(validProduct.getId(), result.getId());
-                verify(productDomainService).updatePrice(eq(productId), any(Money.class));
+                verify(productRepository).save(any(Product.class));
             }
 
             @Test
@@ -312,8 +305,7 @@ class ProductApplicationServiceTest {
                                 "USD"
                         );
 
-                when(productDomainService.updatePrice(eq(productId), any(Money.class)))
-                        .thenThrow(new IllegalArgumentException("Invalid price"));
+                when(productRepository.findById(productId)).thenReturn(java.util.Optional.empty());
 
                 // When & Then
                 ProductApplicationService.ProductApplicationException exception = 
@@ -333,13 +325,13 @@ class ProductApplicationServiceTest {
             @DisplayName("Should deactivate product successfully")
             void shouldDeactivateProductSuccessfully() {
                 // Given
-                doNothing().when(productDomainService).deactivateProduct(productId);
+                doNothing().when(productRepository).deleteById(productId);
 
                 // When
                 assertDoesNotThrow(() -> productApplicationService.deactivateProduct(productId));
 
                 // Then
-                verify(productDomainService).deactivateProduct(productId);
+                verify(productRepository).deleteById(productId);
             }
 
             @Test
@@ -347,7 +339,7 @@ class ProductApplicationServiceTest {
             void shouldThrowExceptionWhenDomainServiceFails() {
                 // Given
                 doThrow(new IllegalArgumentException("Product has remaining stock"))
-                        .when(productDomainService).deactivateProduct(productId);
+                        .when(productRepository).deleteById(productId);
 
                 // When & Then
                 ProductApplicationService.ProductApplicationException exception = 
@@ -372,7 +364,7 @@ class ProductApplicationServiceTest {
             @DisplayName("Should find product successfully by ID")
             void shouldFindProductSuccessfullyById() {
                 // Given
-                when(productDomainService.findProductById(productId)).thenReturn(validProduct);
+                when(productRepository.findById(productId)).thenReturn(java.util.Optional.of(validProduct));
 
                 // When
                 Product result = productApplicationService.findProductById(productId);
@@ -380,14 +372,14 @@ class ProductApplicationServiceTest {
                 // Then
                 assertNotNull(result);
                 assertEquals(validProduct.getId(), result.getId());
-                verify(productDomainService).findProductById(productId);
+                verify(productRepository).findById(productId);
             }
 
             @Test
             @DisplayName("Should throw exception when product not found")
             void shouldThrowExceptionWhenProductNotFound() {
                 // Given
-                when(productDomainService.findProductById(productId))
+                when(productRepository.findById(productId))
                         .thenThrow(new IllegalArgumentException("Product not found"));
 
                 // When & Then
