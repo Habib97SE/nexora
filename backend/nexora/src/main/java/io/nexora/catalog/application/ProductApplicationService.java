@@ -3,7 +3,7 @@ package io.nexora.catalog.application;
 import io.nexora.catalog.domain.Category;
 import io.nexora.catalog.domain.Product;
 import io.nexora.catalog.domain.ProductRepository;
-import main.java.io.nexora.catalog.domain.service.ProductDomainService;
+import io.nexora.catalog.domain.service.ProductDomainService;
 import io.nexora.shared.valueobject.Money;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -210,6 +210,23 @@ public class ProductApplicationService {
         } catch (Exception e) {
             log.error("Failed to deactivate product with ID: {}", productId, e);
             throw new ProductApplicationException("Failed to deactivate product: " + e.getMessage(), e);
+        }
+    }
+
+    @Transactional
+    public void deleteCategory(UUID categoryId) {
+        log.info("Deleting category with ID: {}", categoryId);
+
+        try {
+            // In a real implementation, you would have a CategoryRepository
+            // and a domain service method to handle category deletion.
+            log.info("Category with ID: {} deleted (mock)", categoryId);
+            Category category = findCategoryById(categoryId);
+            category.setActive(false);
+            // categoryRepository.save(category);
+        } catch (Exception e) {
+            log.error("Failed to delete category with ID: {}", categoryId, e);
+            throw new ProductApplicationException("Failed to delete category: " + e.getMessage(), e);
         }
     }
 
