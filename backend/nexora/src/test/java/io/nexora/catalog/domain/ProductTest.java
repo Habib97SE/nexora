@@ -77,9 +77,10 @@ class ProductTest {
             Category category = validCategory;
             LocalDateTime createdAt = LocalDateTime.now().minusDays(1);
             LocalDateTime updatedAt = LocalDateTime.now();
+            String sku = "SKU-123";
 
             // When
-            Product newProduct = new Product(id, name, description, price, stockQuantity, category, createdAt, updatedAt);
+            Product newProduct = new Product(id, name, description, price, stockQuantity, category, createdAt, updatedAt, sku);
 
             // Then
             assertNotNull(newProduct);
@@ -91,6 +92,7 @@ class ProductTest {
             assertEquals(category, newProduct.getCategory());
             assertEquals(createdAt, newProduct.getCreatedAt());
             assertEquals(updatedAt, newProduct.getUpdatedAt());
+            assertEquals(sku, newProduct.getSku());
         }
 
         @Test
