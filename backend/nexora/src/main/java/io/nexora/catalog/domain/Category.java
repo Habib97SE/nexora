@@ -1,9 +1,9 @@
 package io.nexora.catalog.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -25,7 +25,7 @@ public class Category {
     private String id;
 
     @NotEmpty(message = "Name cannot be left empty")
-    @Min(3)
+    @Size(min = 3, message = "Name must be at least 3 characters long")
     private String name;
 
 
