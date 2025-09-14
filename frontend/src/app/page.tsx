@@ -1,103 +1,217 @@
-import Image from "next/image";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { CiHeart, CiSearch } from "react-icons/ci";
+import { IoPersonOutline } from "react-icons/io5";
+import { SlBag } from "react-icons/sl";
+import { HiMenuAlt2 } from "react-icons/hi";
+import { GermanyFlag, USFlag } from "@/components/ui/flags";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div>
+      <header>
+        {/* Main Header */}
+        <div className="main-header border-b">
+          <div className="container mx-auto px-4 lg:px-10">
+            <div className="flex items-center justify-between py-4">
+              
+              {/* Left Section - Currency & Language (Hidden on mobile) */}
+              <div className="hidden xl:flex xl:w-5/12 items-center gap-4">
+                <div className="flex items-center gap-3">
+                  {/* Currency Selector */}
+                  <div className="tf-currencies">
+                    <Select defaultValue="USD">
+                      <SelectTrigger className="w-fit border-none shadow-none hover:bg-gray-50 transition-colors duration-200">
+                        <SelectValue placeholder="Select a currency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="EUR">
+                          <div className="flex items-center gap-2">
+                            <GermanyFlag />
+                            <span>EUR</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="USD">
+                          <div className="flex items-center gap-2">
+                            <USFlag />
+                            <span>USD</span>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+                  {/* Language Selector */}
+                  <div className="tf-languages">
+                    <Select defaultValue="English">
+                      <SelectTrigger className="w-fit border-none shadow-none hover:bg-gray-50 transition-colors duration-200">
+                        <SelectValue placeholder="Select a language" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="English">English</SelectItem>
+                        <SelectItem value="French">French</SelectItem>
+                        <SelectItem value="German">German</SelectItem>
+                        <SelectItem value="Spanish">Spanish</SelectItem>
+                        <SelectItem value="Italian">Italian</SelectItem>
+                        <SelectItem value="Swedish">Swedish</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mobile Menu Button (Visible on mobile/tablet) */}
+              <div className="flex md:w-1/3 w-1/4 xl:hidden">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon" className="text-xl">
+                      <HiMenuAlt2 />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left">
+                    <div className="flex flex-col gap-6 py-4 min-h-screen bg-white">
+                      {/* Currency Section */}
+                      <div className="flex flex-col gap-2">
+                        <h3 className="font-semibold">Currency</h3>
+                        <Select defaultValue="USD">
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="USD">USD $ | United States</SelectItem>
+                            <SelectItem value="EUR">EUR € | Europe</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Language Section */}
+                      <div className="flex flex-col gap-2">
+                        <h3 className="font-semibold">Language</h3>
+                        <Select defaultValue="English">
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="English">English</SelectItem>
+                            <SelectItem value="French">French</SelectItem>
+                            <SelectItem value="German">German</SelectItem>
+                            <SelectItem value="Spanish">Spanish</SelectItem>
+                            <SelectItem value="Italian">Italian</SelectItem>
+                            <SelectItem value="Swedish">Swedish</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Navigation Section */}
+                      <div className="flex flex-col gap-4">
+                        <h3 className="font-semibold">Navigation</h3>
+                        <div className="flex flex-col gap-3">
+                          <Button variant="ghost" className="justify-start text-left h-12">
+                            <CiSearch className="mr-3 text-xl" />
+                            <span>Search</span>
+                          </Button>
+                          <Button variant="ghost" className="justify-start text-left h-12">
+                            <IoPersonOutline className="mr-3 text-xl" />
+                            <span>Account</span>
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
+
+              {/* Center Section - Logo */}
+              <div className="flex md:w-1/3 w-1/2 justify-center">
+                <Link href="/" className="logo-header">
+                  <span className="text-2xl font-bold">nexora</span>
+                </Link>
+              </div>
+
+              {/* Right Section - Navigation Icons */}
+              <div className="flex md:w-1/3 w-1/4 justify-end">
+                <nav className="flex items-center gap-5">
+                  
+                  {/* Desktop Only - Search */}
+                  <div className="hidden xl:block">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="text-xl">
+                          <CiSearch />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Search</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+
+                  {/* Desktop Only - Account */}
+                  <div className="hidden xl:block">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="text-xl">
+                          <IoPersonOutline />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Account</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+
+                  {/* Wishlist - Always Visible */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="relative">
+                        <Button variant="ghost" size="icon" className="text-xl">
+                          <CiHeart />
+                        </Button>
+                        <Badge 
+                          variant="destructive" 
+                          className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs font-semibold"
+                        >
+                          0
+                        </Badge>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Wishlist</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  {/* Shopping Cart - Always Visible */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="relative">
+                        <Button variant="ghost" size="icon" className="text-xl">
+                          <SlBag />
+                        </Button>
+                        <Badge 
+                          variant="destructive" 
+                          className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs font-semibold"
+                        >
+                          0
+                        </Badge>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Shopping Cart</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                </nav>
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+
+      </header>
     </div>
   );
 }
